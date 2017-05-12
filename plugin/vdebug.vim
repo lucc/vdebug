@@ -26,7 +26,7 @@ endif
 
 silent doautocmd User VdebugPre
 
-execute 'pyfile' fnamemodify(expand('<sfile>'), ':p:h:h') . '/pythonx/start_vdebug.py'
+let s:path = fnamemodify(expand('<sfile>'), ':p:h:h')
 
 " Nice characters get screwed up on windows
 if has('win32') || has('win64')
@@ -100,34 +100,43 @@ if g:vdebug_force_ascii == 1
     let g:vdebug_options_defaults["marker_open_tree"] = '-'
 endif
 
-" Create the top dog
-python debugger = vdebug.debugger_interface.DebuggerInterface()
-
 " Commands
-command! -nargs=? -complete=customlist,s:BreakpointTypes Breakpoint python debugger.set_breakpoint(<q-args>)
-command! VdebugStart python debugger.run()
-command! -nargs=? BreakpointRemove python debugger.remove_breakpoint(<q-args>)
-command! BreakpointWindow python debugger.toggle_breakpoint_window()
-command! -nargs=? -bang VdebugEval python debugger.handle_eval('<bang>', <q-args>)
-command! -nargs=+ -complete=customlist,s:OptionNames VdebugOpt python debugger.handle_opt(<f-args>)
-command! -nargs=? VdebugTrace python debugger.handle_trace(<q-args>)
+command! -nargs=? -complete=customlist,s:BreakpointTypes Breakpoint call s:Init() | python debugger.set_breakpoint(<q-args>)
+command! VdebugStart call s:Init() | python debugger.run()
+command! -nargs=? BreakpointRemove call s:Init() | python debugger.remove_breakpoint(<q-args>)
+command! BreakpointWindow call s:Init() | python debugger.toggle_breakpoint_window()
+command! -nargs=? -bang VdebugEval call s:Init() | python debugger.handle_eval('<bang>', <q-args>)
+command! -nargs=+ -complete=customlist,s:OptionNames VdebugOpt call s:Init() | python debugger.handle_opt(<f-args>)
+command! -nargs=? VdebugTrace call s:Init() | python debugger.handle_trace(<q-args>)
 
-if hlexists("DbgCurrentLine") == 0
-    hi default DbgCurrentLine term=reverse ctermfg=White ctermbg=Red guifg=#ffffff guibg=#ff0000
-end
-if hlexists("DbgCurrentSign") == 0
-    hi default DbgCurrentSign term=reverse ctermfg=White ctermbg=Red guifg=#ffffff guibg=#ff0000
-end
-if hlexists("DbgBreakptLine") == 0
-    hi default DbgBreakptLine term=reverse ctermfg=White ctermbg=Green guifg=#ffffff guibg=#00ff00
-end
-if hlexists("DbgBreakptSign") == 0
-    hi default DbgBreakptSign term=reverse ctermfg=White ctermbg=Green guifg=#ffffff guibg=#00ff00
-end
+" Initialize several relevant but slow things lazily
+let s:init_done = 0
+function! s:Init()
+    if s:init_done
+        return
+    endif
+    execute 'pyfile' s:path . '/pythonx/start_vdebug.py'
+    " Create the top dog
+    python debugger = vdebug.debugger_interface.DebuggerInterface()
 
-" Signs and highlighted lines for breakpoints, etc.
-sign define current text=-> texthl=DbgCurrentSign linehl=DbgCurrentLine
-sign define breakpt text=B> texthl=DbgBreakptSign linehl=DbgBreakptLine
+    " Signs and highlighted lines for breakpoints, etc.
+    sign define current text=-> texthl=DbgCurrentSign linehl=DbgCurrentLine
+    sign define breakpt text=B> texthl=DbgBreakptSign linehl=DbgBreakptLine
+
+    if hlexists("DbgCurrentLine") == 0
+      hi default DbgCurrentLine term=reverse ctermfg=White ctermbg=Red guifg=#ffffff guibg=#ff0000
+    end
+    if hlexists("DbgCurrentSign") == 0
+      hi default DbgCurrentSign term=reverse ctermfg=White ctermbg=Red guifg=#ffffff guibg=#ff0000
+    end
+    if hlexists("DbgBreakptLine") == 0
+      hi default DbgBreakptLine term=reverse ctermfg=White ctermbg=Green guifg=#ffffff guibg=#00ff00
+    end
+    if hlexists("DbgBreakptSign") == 0
+      hi default DbgBreakptSign term=reverse ctermfg=White ctermbg=Green guifg=#ffffff guibg=#00ff00
+    end
+    let s:init_done = 1
+endfunction
 
 function! s:BreakpointTypes(A,L,P)
     let arg_to_cursor = strpart(a:L,11,a:P)
@@ -261,5 +270,6 @@ endfunction
 silent doautocmd User VdebugPost
 autocmd VimLeavePre * python debugger.close()
 
+call s:Init()
 call Vdebug_load_options(g:vdebug_options)
 call Vdebug_load_keymaps(g:vdebug_keymap)
