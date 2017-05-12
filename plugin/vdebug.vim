@@ -148,16 +148,6 @@ function! s:BreakpointTypes(A,L,P)
     endif
 endfunction
 
-function! s:HandleEval(bang,code)
-    let code = escape(a:code,'"')
-    if strlen(a:bang)
-        execute 'python debugger.save_eval("'.code.'")'
-    endif
-    if strlen(a:code)
-        execute 'python debugger.handle_eval("'.code.'")'
-    endif
-endfunction
-
 " Reload options dictionary, by merging with default options.
 "
 " This should be called if you want to update the options after vdebug has
