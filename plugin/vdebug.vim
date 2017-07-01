@@ -159,7 +159,7 @@ function! Vdebug_load_options(options)
     let single_defined_params = s:Vdebug_get_options()
     let g:vdebug_options = extend(g:vdebug_options, single_defined_params)
 
-    exe ":python debugger.reload_options()"
+    python debugger.reload_options()
 endfunction
 
 " Get options defined outside of the vdebug_options dictionary
@@ -217,7 +217,7 @@ function! Vdebug_load_keymaps(keymaps)
 
     " Exceptional case for visual evaluation
     exe "vnoremap ".g:vdebug_keymap["eval_visual"]." :VdebugVEval<cr>"
-    exe ":python debugger.reload_keymappings()"
+    python debugger.reload_keymappings()
 endfunction
 
 function! s:OptionNames(A,L,P)
