@@ -110,13 +110,15 @@ endif
 python debugger = vdebug.debugger_interface.DebuggerInterface()
 
 " Commands
-command! -nargs=? -complete=customlist,s:BreakpointTypes Breakpoint python debugger.set_breakpoint(<q-args>)
-command! VdebugStart python debugger.run()
-command! -nargs=? BreakpointRemove python debugger.remove_breakpoint(<q-args>)
-command! BreakpointWindow python debugger.toggle_breakpoint_window()
-command! -nargs=? -bang VdebugEval python debugger.handle_eval('<bang>', <q-args>)
-command! -nargs=+ -complete=customlist,s:OptionNames VdebugOpt python debugger.handle_opt(<f-args>)
-command! -nargs=? VdebugTrace python debugger.handle_trace(<q-args>)
+command!                                                 VdebugStart      python debugger.run()
+command!                                                 VdebugStop       python debugger.close()
+command! -nargs=? -bang                                  VdebugEval       python debugger.handle_eval('<bang>', <q-args>)
+command!                                                 VdebugVEval      python debugger.handle_visual_eval()
+command! -nargs=+ -complete=customlist,s:OptionNames     VdebugOpt        python debugger.handle_opt(<f-args>)
+command! -nargs=?                                        VdebugTrace      python debugger.handle_trace(<q-args>)
+command! -nargs=? -complete=customlist,s:BreakpointTypes Breakpoint       python debugger.set_breakpoint(<q-args>)
+command! -nargs=?                                        BreakpointRemove python debugger.remove_breakpoint(<q-args>)
+command!                                                 BreakpointWindow python debugger.toggle_breakpoint_window()
 
 if hlexists("DbgCurrentLine") == 0
     hi default DbgCurrentLine term=reverse ctermfg=White ctermbg=Red guifg=#ffffff guibg=#ff0000
@@ -209,12 +211,12 @@ function! Vdebug_load_keymaps(keymaps)
     let g:vdebug_keymap = extend(g:vdebug_keymap_defaults, a:keymaps)
 
     " Mappings allowed in non-debug mode
-    exe "noremap ".g:vdebug_keymap["run"]." :python debugger.run()<cr>"
-    exe "noremap ".g:vdebug_keymap["close"]." :python debugger.close()<cr>"
-    exe "noremap ".g:vdebug_keymap["set_breakpoint"]." :python debugger.set_breakpoint()<cr>"
+    exe "noremap ".g:vdebug_keymap["run"]." :VdebugStart<cr>"
+    exe "noremap ".g:vdebug_keymap["close"]." :VdebugStop<cr>"
+    exe "noremap ".g:vdebug_keymap["set_breakpoint"]." :Breakpoint<cr>"
 
     " Exceptional case for visual evaluation
-    exe "vnoremap ".g:vdebug_keymap["eval_visual"]." :python debugger.handle_visual_eval()<cr>"
+    exe "vnoremap ".g:vdebug_keymap["eval_visual"]." :VdebugVEval<cr>"
     exe ":python debugger.reload_keymappings()"
 endfunction
 
@@ -255,7 +257,7 @@ function! Vdebug_statusline()
 endfunction
 
 silent doautocmd User VdebugPost
-autocmd VimLeavePre * python debugger.close()
+autocmd VimLeavePre * VdebugStop
 
 call Vdebug_load_options(g:vdebug_options)
 call Vdebug_load_keymaps(g:vdebug_keymap)
