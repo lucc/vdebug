@@ -405,6 +405,14 @@ This section deals with how to use Vdebug to debug a script. It assumes that
 you've already set up the debugger with the language that you're using: if you
 haven't see |VdebugSetUp|.
 
+							     *g:vdebug_loaded*
+If you want to inhibit Vdebug to load you can set g:vdebug_loaded in your
+vimrc or in a --cmd (it just has to happen before plugins are loaded by the
+init routines |load-plugins|).  No mappings or commands described below will
+be available in this case. >
+
+    let g:vdebug_loaded = 1
+<
 ------------------------------------------------------------------------------
 4.1 Starting the debugger                                        *VdebugStart*
 

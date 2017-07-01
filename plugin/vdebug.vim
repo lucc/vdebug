@@ -18,6 +18,12 @@
 "=============================================================================
 " }}}
 
+" Allow the user to disable loading of the plugin.
+if exists('g:vdebug_loaded') && g:vdebug_loaded
+    finish
+endif
+let g:vdebug_loaded = 1
+
 " Do not source this script when python is not compiled in.
 if !has("python")
     echomsg ":python is not available, vdebug will not be loaded."
