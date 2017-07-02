@@ -20,7 +20,7 @@ class Vdebug
       set_opt "debug_file", "/tmp/vdebug.log"
     end
     set_opt "background_listener", 0
-    vim.server.remote_send ":python debugger.run()<CR>"
+    vim.server.remote_send ":VdebugStart<CR>"
     sleep 2
   end
 

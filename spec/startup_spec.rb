@@ -10,6 +10,6 @@ describe "startup" do
       expect { TCPSocket.new('localhost', 9000).close }.not_to raise_error
     end
 
-    after  { vim.command 'python debugger.close()' }
+    after  { vim.command 'VdebugStop' }
   end
 end

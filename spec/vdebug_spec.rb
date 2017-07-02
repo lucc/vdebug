@@ -20,7 +20,7 @@ describe Vdebug do
 
       it "should send the command to start vdebug" do
         vim.server.should_receive(:remote_send).
-          with(":python debugger.run()<CR>")
+          with(":VdebugStart<CR>")
         vdebug.start_listening
       end
     end
