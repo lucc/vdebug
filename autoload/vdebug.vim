@@ -101,3 +101,15 @@ function! s:load_keymaps(keymaps)
     exe "vnoremap ".g:vdebug_keymap["eval_visual"]." :VdebugVEval<cr>"
     python debugger.reload_keymappings()
 endfunction
+
+function! vdebug#breakpoint(args)
+    call s:init()
+    execute 'python debugger.set_breakpoint(' . a:args . ')'
+endfunction
+
+function! vdebug#remove_breakpoint(args)
+    if !s:initialized
+	return
+    endif
+    execute 'python debugger.remove_breakpoint(' . a:args . ')'
+endfunction
