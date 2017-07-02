@@ -32,8 +32,6 @@ endif
 
 silent doautocmd User VdebugPre
 
-execute 'pyfile' fnamemodify(expand('<sfile>'), ':p:h:h') . '/pythonx/start_vdebug.py'
-
 " Nice characters get screwed up on windows
 if has('win32') || has('win64')
     let g:vdebug_force_ascii = 1
@@ -106,12 +104,9 @@ if g:vdebug_force_ascii == 1
     let g:vdebug_options_defaults["marker_open_tree"] = '-'
 endif
 
-" Create the top dog
-python debugger = vdebug.debugger_interface.DebuggerInterface()
-
 " Commands
-command!                                                 VdebugStart      python debugger.run()
-command!                                                 VdebugStop       python debugger.close()
+command!                                                 VdebugStart      call vdebug#start()
+command!                                                 VdebugStop       call vdebug#stop()
 command! -nargs=? -bang                                  VdebugEval       python debugger.handle_eval('<bang>', <q-args>)
 command!                                                 VdebugVEval      python debugger.handle_visual_eval()
 command! -nargs=+ -complete=customlist,s:OptionNames     VdebugOpt        python debugger.handle_opt(<f-args>)
@@ -137,6 +132,7 @@ end
 sign define current text=-> texthl=DbgCurrentSign linehl=DbgCurrentLine
 sign define breakpt text=B> texthl=DbgBreakptSign linehl=DbgBreakptLine
 
+
 function! s:BreakpointTypes(A,L,P)
     let arg_to_cursor = strpart(a:L,11,a:P)
     let space_idx = stridx(arg_to_cursor,' ')
@@ -145,79 +141,6 @@ function! s:BreakpointTypes(A,L,P)
     else
         return []
     endif
-endfunction
-
-" Reload options dictionary, by merging with default options.
-"
-" This should be called if you want to update the options after vdebug has
-" been loaded.
-function! Vdebug_load_options(options)
-    " Merge options with defaults
-    let g:vdebug_options = extend(g:vdebug_options_defaults, a:options)
-
-    " Override with single defined params ie. g:vdebug_options_port
-    let single_defined_params = s:Vdebug_get_options()
-    let g:vdebug_options = extend(g:vdebug_options, single_defined_params)
-
-    python debugger.reload_options()
-endfunction
-
-" Get options defined outside of the vdebug_options dictionary
-"
-" This helps for when users might want to define a single option by itself
-" without needing the dictionary ie. vdebug_options_port = 9000
-function! s:Vdebug_get_options()
-    let param_namespace = "g:vdebug_options_"
-    let param_namespace_len = strlen(param_namespace)
-
-    " Get the paramter names and concat the g:vdebug_options namespace
-    let parameters = map(keys(g:vdebug_options_defaults), 'param_namespace.v:val')
-
-    " Only use the defined parameters
-    let existing_params = filter(parameters, 'exists(v:val)')
-
-    " put into a dictionary for use with extend()
-    let params = {}
-    for name in existing_params
-      let val = eval(name)
-
-      " Remove g:vdebug_options namespace from param
-      let name = strpart(name, param_namespace_len)
-      let params[name] = val
-    endfor
-    if !empty(params)
-      echoerr "Deprication Warning: The options g:vdebug_options_* are depricated.  Please use the g:vdebug_options dictionary."
-    endif
-    return params
-endfunction
-
-" Assign keymappings, and merge with defaults.
-"
-" This should be called if you want to update the keymappings after vdebug has
-" been loaded.
-function! Vdebug_load_keymaps(keymaps)
-    " Unmap existing keys, if applicable
-    if has_key(g:vdebug_keymap, "run")
-        exe "silent! nunmap ".g:vdebug_keymap["run"]
-    endif
-    if has_key(g:vdebug_keymap, "set_breakpoint")
-        exe "silent! nunmap ".g:vdebug_keymap["set_breakpoint"]
-    endif
-    if has_key(g:vdebug_keymap, "eval_visual")
-        exe "silent! vunmap ".g:vdebug_keymap["eval_visual"]
-    endif
-
-    " Merge keymaps with defaults
-    let g:vdebug_keymap = extend(g:vdebug_keymap_defaults, a:keymaps)
-
-    " Mappings allowed in non-debug mode
-    exe "noremap ".g:vdebug_keymap["run"]." :VdebugStart<cr>"
-    exe "noremap ".g:vdebug_keymap["close"]." :VdebugStop<cr>"
-    exe "noremap ".g:vdebug_keymap["set_breakpoint"]." :Breakpoint<cr>"
-
-    " Exceptional case for visual evaluation
-    exe "vnoremap ".g:vdebug_keymap["eval_visual"]." :VdebugVEval<cr>"
-    python debugger.reload_keymappings()
 endfunction
 
 function! s:OptionNames(A,L,P)
@@ -257,7 +180,3 @@ function! Vdebug_statusline()
 endfunction
 
 silent doautocmd User VdebugPost
-autocmd VimLeavePre * VdebugStop
-
-call Vdebug_load_options(g:vdebug_options)
-call Vdebug_load_keymaps(g:vdebug_keymap)
