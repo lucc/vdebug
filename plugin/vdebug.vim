@@ -107,13 +107,13 @@ endif
 " Commands
 command!                                                 VdebugStart      call vdebug#start()
 command!                                                 VdebugStop       call vdebug#stop()
-command! -nargs=? -bang                                  VdebugEval       python debugger.handle_eval('<bang>', <q-args>)
-command!                                                 VdebugVEval      python debugger.handle_visual_eval()
-command! -nargs=+ -complete=customlist,s:OptionNames     VdebugOpt        python debugger.handle_opt(<f-args>)
-command! -nargs=?                                        VdebugTrace      python debugger.handle_trace(<q-args>)
+command! -nargs=? -bang                                  VdebugEval       call vdebug#eval('<bang>', <q-args>)
+command!                                                 VdebugVEval      call vdebug#veval()
+command! -nargs=+ -complete=customlist,s:OptionNames     VdebugOpt        call vdebug#opt(<f-args>)
+command! -nargs=?                                        VdebugTrace      call vdebug#trace(<q-args>)
 command! -nargs=? -complete=customlist,s:BreakpointTypes Breakpoint       call vdebug#breakpoint(<q-args>)
 command! -nargs=?                                        BreakpointRemove call vdebug#remove_breakpoint(<q-args>)
-command!                                                 BreakpointWindow python debugger.toggle_breakpoint_window()
+command!                                                 BreakpointWindow call vdebug#breakpoint_window()
 
 if hlexists("DbgCurrentLine") == 0
     hi default DbgCurrentLine term=reverse ctermfg=White ctermbg=Red guifg=#ffffff guibg=#ff0000

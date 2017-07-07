@@ -113,3 +113,31 @@ function! vdebug#remove_breakpoint(args)
     endif
     execute 'python debugger.remove_breakpoint(' . a:args . ')'
 endfunction
+
+function! vdebug#eval(force, args)
+    call s:init()
+    python debugger.handle_eval(vim.eval('a:force'), vim.eval('a:args'))
+endfunction
+
+function! vdebug#veval()
+    call s:init()
+    python debugger.handle_visual_eval()
+endfunction
+
+function! vdebug#opt(...)
+    call s:init()
+    python debugger.handle_opt(*vim.eval('a:000'))
+endfunction
+
+function! vdebug#trace(args)
+    call s:init()
+    python debugger.handle_trace(vim.eval('a:args'))
+endfunction
+
+function! vdebug#breakpoint_window()
+    if !s:initialized
+	echomsg 'No breakpoints.'
+	return
+    endif
+    python debugger.toggle_breakpoint_window()
+endfunction
