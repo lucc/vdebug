@@ -28,24 +28,10 @@ If you're having trouble with Vdebug in any way, here are the steps you can take
 
 ## News
 
-Follow me on Twitter, [@joonty](http://twitter.com/joonty), for Vdebug updates and release news.
-
-* **20/02/2018:** Version 1.5.2 released. This will be the last version with python2 support. If you are stuck to python2 fix your plugin manager on this version.
-* **07/09/2015:** Version 1.5.1 released. This adds a `:VdebugEval!` command and fixes issues with buffers not being wiped out. See below for more information.
-* **26/08/2015:** Version 1.5.0 released. This has a whole series of fixes and even a couple of new features.
-* **15/05/2014:** Version 1.4.2 released. This fixes major problems with the latest version of Vim, which has stricter rules around function naming. See [this pull request for more details][5]
-* **12/04/2014:** My son was born! Hence no contact or work on Vdebug for the following month.
-
-## Recent version (version 1.5.1)
-
-### Bug fixes:
- * Fix buffers not being wiped out after ending a session (thanks @BlackIkeEagle, #226)
-
-### Features:
- * Add :VdebugEval! command, which remembers the eval expression when stepping
- through, as an alternative to :VdebugTrace (thanks @benjifisher, #193)
-
-See the CHANGELOG for the full history of changes.
+Version 1.5.2 will be the last version that supports python2.  Current
+development happens in the
+[v2-integration](https://github.com/joonty/vdebug/tree/v2-integration) branch.
+Please check it out and help us improve it!
 
 ## How to use
 
