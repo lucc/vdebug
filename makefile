@@ -3,7 +3,8 @@ FILES = doc plugin python3 syntax CHANGELOG LICENCE README.md VERSION
 test: unittest rspec cucumber
 tarball: vdebug-$(VERSION).tar.gz
 htmlcov/index.html:
-	coverage run -m unittest discover && coverage html --include="*/vdebug/*"
+	coverage run -m unittest discover
+	coverage html --include="python3/vdebug/*"
 unittest:
 	python3 -m unittest discover
 rspec: vendor/bundle
