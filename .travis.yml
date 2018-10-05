@@ -16,7 +16,7 @@ install:
     # Xvfb is needed to use the server feature of vim without a running X
     # server (which is needed for some tests).  The locales and sudo packages
     # are used to set things up inside the container.
-  - docker exec -t vdebug-distro-test apt-get install -y vim-gtk3 php-cli php-xdebug bundler python3-coverage xvfb locales sudo
+  - docker exec -t vdebug-distro-test apt-get install -y vim-gtk3 php-cli php-xdebug bundler python3 python3-coverage xvfb locales sudo
   - docker exec -t vdebug-distro-test bash -c 'echo en_US.UTF-8 UTF-8 >> /etc/locale.gen'
   - docker exec -t vdebug-distro-test locale-gen
   - docker exec -t vdebug-distro-test bash -c 'echo LANG=en_US.UTF-8 > /etc/default/locale'
